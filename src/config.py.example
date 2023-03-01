@@ -1,0 +1,13 @@
+BOT_TOKEN = "123"
+BOT_ID = -123
+CHAT_PEER_ID = 2000000001
+
+SCHEDULE_NAME_FILTER = ("2 курса", "09.02.07", "БО")
+
+INCLUDED_ATTACHMENTS = ["photo", "doc", "video", "poll"]
+
+PDF_PATH = "img/schedule.pdf"
+PNG_PATH = "img/schedule-{index}.png"
+SCHEDULE_DATA_PATH = "schedule_data.json"
+
+SCHEDULE_CHECK_INTERVAL = 5
