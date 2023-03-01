@@ -1,3 +1,4 @@
 .idea/
 src/config.py
 img/
+src/schedule_data.json
