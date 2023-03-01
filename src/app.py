@@ -1,12 +1,12 @@
 from vkbottle import Bot, CtxStorage, PhotoMessageUploader, LoopWrapper
 from typing import Optional, List
 
-from src import parser
-from src.routes import labelers
-from src.middlewares import NoBotMiddleware, ConfigPeerIdOnlyMiddleware
+import parser
+from routes import labelers
+from middlewares import NoBotMiddleware, ConfigPeerIdOnlyMiddleware
 import aiohttp
 import config
-from src.utils import json_read_async, AttachmentString, json_write_async, get_message_by_id
+from utils import json_read_async, AttachmentString, json_write_async, get_message_by_id
 
 
 async def on_startup():

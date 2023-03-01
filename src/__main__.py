@@ -1,4 +1,4 @@
-from src.app import bot
+from app import bot
 import loguru
 
 if __name__ == "__main__":
