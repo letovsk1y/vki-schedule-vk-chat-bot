@@ -5,4 +5,5 @@ pillow
 vkbottle~=4.3.12
 pymupdf
 loguru
+brotli
 ujson

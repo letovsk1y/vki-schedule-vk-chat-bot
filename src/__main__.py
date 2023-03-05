@@ -1,9 +1,6 @@
-from app import bot
-import loguru
+import os
+os.chdir(os.path.dirname(__file__))
+from src.app import bot
 
 if __name__ == "__main__":
-    # use it, if you running it on linux
-    # import uvloop
-    # uvloop.install()
-
     bot.run_forever()

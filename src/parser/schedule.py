@@ -1,9 +1,9 @@
 from typing import Optional, List
 import aiohttp
 import aiofiles
+import fitz
 from PIL import Image
 from bs4 import BeautifulSoup
-import fitz
 from vkbottle import PhotoMessageUploader
 from src import config
 

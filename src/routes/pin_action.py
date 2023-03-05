@@ -1,7 +1,7 @@
 from typing import List, Optional
 from vkbottle.bot import BotLabeler, Message
 
-from src import config, parser, app
+from src import config, app, parser
 from src.rules import MessagePinEventRule
 from src.utils import get_message_by_id, json_read_async, AttachmentString, json_write_async
 

@@ -1,12 +1,10 @@
-from vkbottle import Bot, CtxStorage, PhotoMessageUploader, LoopWrapper
-from typing import Optional, List
-
-import parser
-from routes import labelers
-from middlewares import NoBotMiddleware, ConfigPeerIdOnlyMiddleware
 import aiohttp
-import config
-from utils import json_read_async, AttachmentString, json_write_async, get_message_by_id
+from typing import Optional, List
+from vkbottle import Bot, CtxStorage, PhotoMessageUploader, LoopWrapper
+from src.middlewares import NoBotMiddleware, ConfigPeerIdOnlyMiddleware
+from src.utils import json_read_async, AttachmentString, json_write_async, get_message_by_id
+from src.routes import labelers
+from src import config, parser
 
 
 async def on_startup():
@@ -23,6 +21,7 @@ async def on_shutdown():
 aiohttp_session = aiohttp.ClientSession()
 photo_message_uploader: Optional[PhotoMessageUploader] = None
 ctx_storage = CtxStorage()
+typing_peers = set([])
 lw = LoopWrapper(on_startup=[on_startup()], on_shutdown=[on_shutdown()])
 
 bot = Bot(config.BOT_TOKEN, loop_wrapper=lw)
@@ -32,6 +31,16 @@ for labeler in labelers:
 
 bot.labeler.message_view.register_middleware(NoBotMiddleware)
 bot.labeler.message_view.register_middleware(ConfigPeerIdOnlyMiddleware)
+bot.labeler.message_view.replace_mention = True
+
+
+@lw.interval(seconds=7)
+async def typing_interval():
+    if len(typing_peers) == 0:
+        return
+
+    for peer_id in typing_peers:
+        await bot.api.messages.set_activity(peer_id=peer_id, type="typing")
 
 
 # first_time arg, needed to send custom messages for first start
@@ -45,6 +54,8 @@ async def schedule_check(first_time: bool = False):
     except KeyError:
         # if link for schedule file not found, we will use old link
         link = schedule_data["link"]
+
+    print(link, schedule_data["link"])
 
     # convert list of attachment strings to our list of AttachmentString object
     schedule_attachments: List[AttachmentString] = AttachmentString.to_attachment_list(schedule_data["attachments"])
@@ -67,9 +78,17 @@ async def schedule_check(first_time: bool = False):
         # and add it to schedule_attachments list
         for attachment in uploaded_attachments:
             schedule_attachments.append(AttachmentString(attachment))
+    else:
+        if first_time:
+            await bot.api.messages.send(
+                peer_ids=[config.CHAT_PEER_ID],
+                message="Я поднялся, обновлений расписания не было",
+                random_id=0
+            )
+        return
 
     # getting chat information about pinned message id
-    chat_info = await bot.api.messages.get_conversations_by_id([config.CHAT_PEER_ID])
+    chat_info = await bot.api.messages.get_conversations_by_id(peer_ids=[config.CHAT_PEER_ID])
     chat_info = chat_info.items[0]
     if chat_info.chat_settings.pinned_message is None:
         # if pinned message not found, we will not send anything,

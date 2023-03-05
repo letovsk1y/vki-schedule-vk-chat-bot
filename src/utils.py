@@ -31,23 +31,26 @@ class AttachmentString:
     access_key: Optional[str] = None
 
     def __init__(self, attachment: MessagesMessageAttachment | str):
-        if isinstance(attachment, MessagesMessageAttachment):
-            attachment = attachment.dict()
-            self.type = attachment["type"].value
-            self.id = int(attachment[self.type]["id"])
-            self.owner_id = int(attachment[self.type]["owner_id"])
-            self.access_key = attachment[self.type]["access_key"] if "access_key" in attachment[self.type].keys() else None
-        else:
-            attachment = attachment.split("_")
-            self.id = int(attachment[1])
-            self.access_key = attachment[2] if len(attachment) > 1 else None
-            _owner_id = ""
-            for char in list(attachment[0]):
-                if char.isalpha():
-                    self.type += char
-                else:
-                    _owner_id += char
-            self.owner_id = int(_owner_id)
+        try:
+            if isinstance(attachment, MessagesMessageAttachment):
+                attachment = attachment.dict()
+                self.type = attachment["type"].value
+                self.id = int(attachment[self.type]["id"])
+                self.owner_id = int(attachment[self.type]["owner_id"])
+                self.access_key = attachment[self.type]["access_key"] if "access_key" in attachment[self.type].keys() else None
+            else:
+                attachment = attachment.split("_")
+                self.id = int(attachment[1])
+                self.access_key = attachment[2] if len(attachment) > 1 else None
+                _owner_id = ""
+                for char in list(attachment[0]):
+                    if char.isalpha():
+                        self.type += char
+                    else:
+                        _owner_id += char
+                self.owner_id = int(_owner_id)
+        except TypeError:
+            pass
 
     @staticmethod
     def to_attachment_list(attachments: List[MessagesMessageAttachment | str]) -> list:
